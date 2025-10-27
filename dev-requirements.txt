@@ -1,0 +1,6 @@
+pytest==8.4.2
+pytest-django==4.11.1
+factory_boy==3.3.3
+Faker==37.11.0
+python-dotenv==1.1.1
+PyYAML==6.0.3

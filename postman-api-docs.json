@@ -1,0 +1,417 @@
+{
+    "info": {
+      "name": "Analytics Backend API",
+      "description": "Complete API collection for Analytics Backend",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+      {
+        "key": "base_url",
+        "value": "http://localhost:8000",
+        "type": "string"
+      }
+    ],
+    "item": [
+      {
+        "name": "📊 Authentication & Accounts",
+        "item": [
+          {
+            "name": "Register Organization",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"organization_name\": \"Test Company\",\n  \"admin_username\": \"testadmin\",\n  \"admin_email\": \"admin@testcompany.com\",\n  \"admin_password\": \"securepassword123\",\n  \"admin_first_name\": \"John\",\n  \"admin_last_name\": \"Doe\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/api/accounts/auth/register/",
+                "host": ["{{base_url}}"],
+                "path": ["api", "accounts", "auth", "register", ""]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Login",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"username\": \"testadmin\",\n  \"password\": \"securepassword123\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/api/accounts/auth/login/",
+                "host": ["{{base_url}}"],
+                "path": ["api", "accounts", "auth", "login", ""]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Get User Profile",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwt_token}}"
+                }
+              ],
+              "url": {
+                "raw": "{{base_url}}/api/accounts/user/profile/",
+                "host": ["{{base_url}}"],
+                "path": ["api", "accounts", "user", "profile", ""]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Get Organization Profile",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwt_token}}"
+                }
+              ],
+              "url": {
+                "raw": "{{base_url}}/api/accounts/organization/profile/",
+                "host": ["{{base_url}}"],
+                "path": ["api", "accounts", "organization", "profile", ""]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Regenerate API Key",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwt_token}}"
+                }
+              ],
+              "url": {
+                "raw": "{{base_url}}/api/accounts/organization/regenerate-api-key/",
+                "host": ["{{base_url}}"],
+                "path": ["api", "accounts", "organization", "regenerate-api-key", ""]
+              }
+            },
+            "response": []
+          }
+        ]
+      },
+      {
+        "name": "📈 Data Collection (Tracking)",
+        "item": [
+          {
+            "name": "Start Session",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-API-Key",
+                  "value": "{{api_key}}"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"domain\": \"example.com\",\n  \"session_id\": \"session_{{$timestamp}}\",\n  \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\",\n  \"ip_address\": \"192.168.1.100\",\n  \"device_type\": \"desktop\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/api/tracking/v1/session/start/",
+                "host": ["{{base_url}}"],
+                "path": ["api", "tracking", "v1", "session", "start", ""]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Track Page View",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-API-Key",
+                  "value": "{{api_key}}"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"domain\": \"example.com\",\n  \"session_id\": \"session_{{$timestamp}}\",\n  \"page_url\": \"/home\",\n  \"page_title\": \"Home Page\",\n  \"referrer\": \"https://google.com\",\n  \"load_time\": 1200,\n  \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\",\n  \"ip_address\": \"192.168.1.100\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/api/tracking/v1/pageview/",
+                "host": ["{{base_url}}"],
+                "path": ["api", "tracking", "v1", "pageview", ""]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Track Event",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-API-Key",
+                  "value": "{{api_key}}"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"domain\": \"example.com\",\n  \"session_id\": \"session_{{$timestamp}}\",\n  \"event_name\": \"button_click\",\n  \"event_data\": {\n    \"button_id\": \"cta-button\",\n    \"color\": \"blue\",\n    \"position\": \"header\"\n  },\n  \"page_url\": \"/home\",\n  \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\",\n  \"ip_address\": \"192.168.1.100\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/api/tracking/v1/event/",
+                "host": ["{{base_url}}"],
+                "path": ["api", "tracking", "v1", "event", ""]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "End Session",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-API-Key",
+                  "value": "{{api_key}}"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"domain\": \"example.com\",\n  \"session_id\": \"session_{{$timestamp}}\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/api/tracking/v1/session/end/",
+                "host": ["{{base_url}}"],
+                "path": ["api", "tracking", "v1", "session", "end", ""]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Batch Tracking",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-API-Key",
+                  "value": "{{api_key}}"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "[\n  {\n    \"type\": \"pageview\",\n    \"domain\": \"example.com\",\n    \"session_id\": \"batch_session_{{$timestamp}}\",\n    \"page_url\": \"/product/1\",\n    \"page_title\": \"Product Page 1\"\n  },\n  {\n    \"type\": \"pageview\",\n    \"domain\": \"example.com\",\n    \"session_id\": \"batch_session_{{$timestamp}}\",\n    \"page_url\": \"/product/2\",\n    \"page_title\": \"Product Page 2\"\n  },\n  {\n    \"type\": \"event\",\n    \"domain\": \"example.com\",\n    \"session_id\": \"batch_session_{{$timestamp}}\",\n    \"event_name\": \"add_to_cart\",\n    \"event_data\": {\n      \"product_id\": \"123\",\n      \"price\": 29.99\n    }\n  }\n]"
+              },
+              "url": {
+                "raw": "{{base_url}}/api/tracking/v1/batch/",
+                "host": ["{{base_url}}"],
+                "path": ["api", "tracking", "v1", "batch", ""]
+              }
+            },
+            "response": []
+          }
+        ]
+      },
+      {
+        "name": "📊 Analytics & Reporting",
+        "item": [
+          {
+            "name": "Analytics Overview",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwt_token}}"
+                }
+              ],
+              "url": {
+                "raw": "{{base_url}}/api/reporting/api/v1/overview/?days=7&website_id={{website_id}}",
+                "host": ["{{base_url}}"],
+                "path": ["api", "reporting", "api", "v1", "overview", ""],
+                "query": [
+                  {
+                    "key": "days",
+                    "value": "7"
+                  },
+                  {
+                    "key": "website_id",
+                    "value": "{{website_id}}"
+                  }
+                ]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Time Series Data",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwt_token}}"
+                }
+              ],
+              "url": {
+                "raw": "{{base_url}}/api/reporting/api/v1/timeseries/?days=30&website_id={{website_id}}",
+                "host": ["{{base_url}}"],
+                "path": ["api", "reporting", "api", "v1", "timeseries", ""],
+                "query": [
+                  {
+                    "key": "days",
+                    "value": "30"
+                  },
+                  {
+                    "key": "website_id",
+                    "value": "{{website_id}}"
+                  }
+                ]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Top Pages",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwt_token}}"
+                }
+              ],
+              "url": {
+                "raw": "{{base_url}}/api/reporting/api/v1/top-pages/?days=7&limit=10&website_id={{website_id}}",
+                "host": ["{{base_url}}"],
+                "path": ["api", "reporting", "api", "v1", "top-pages", ""],
+                "query": [
+                  {
+                    "key": "days",
+                    "value": "7"
+                  },
+                  {
+                    "key": "limit",
+                    "value": "10"
+                  },
+                  {
+                    "key": "website_id",
+                    "value": "{{website_id}}"
+                  }
+                ]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Event Summary",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwt_token}}"
+                }
+              ],
+              "url": {
+                "raw": "{{base_url}}/api/reporting/api/v1/events/?days=7&website_id={{website_id}}",
+                "host": ["{{base_url}}"],
+                "path": ["api", "reporting", "api", "v1", "events", ""],
+                "query": [
+                  {
+                    "key": "days",
+                    "value": "7"
+                  },
+                  {
+                    "key": "website_id",
+                    "value": "{{website_id}}"
+                  }
+                ]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Real-time Stats",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwt_token}}"
+                }
+              ],
+              "url": {
+                "raw": "{{base_url}}/api/reporting/api/v1/realtime/?website_id={{website_id}}",
+                "host": ["{{base_url}}"],
+                "path": ["api", "reporting", "api", "v1", "realtime", ""],
+                "query": [
+                  {
+                    "key": "website_id",
+                    "value": "{{website_id}}"
+                  }
+                ]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Website List",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwt_token}}"
+                }
+              ],
+              "url": {
+                "raw": "{{base_url}}/api/reporting/api/v1/websites/",
+                "host": ["{{base_url}}"],
+                "path": ["api", "reporting", "api", "v1", "websites", ""]
+              }
+            },
+            "response": []
+          }
+        ]
+      }
+    ]
+  }
