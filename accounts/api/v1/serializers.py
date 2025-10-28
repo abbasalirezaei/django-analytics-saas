@@ -94,8 +94,13 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
 
         # Add custom claims
-        token['organization_id'] = user.organization.id
-        token['organization_name'] = user.organization.name
+        if user.organization:
+            token['organization_id'] = user.organization.id
+            token['organization_name'] = user.organization.name
+        else:
+            token['organization_id'] = None
+            token['organization_name'] = None
+
         token['role'] = user.role
 
         return token

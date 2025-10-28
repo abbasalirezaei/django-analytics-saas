@@ -63,6 +63,31 @@ services:
       redis:
         condition: service_started
 
+  locust-master:
+    image: locustio/locust
+    ports:
+      - "8089:8089"  # Web UI
+      - "5557:5557"  # Worker connection
+    volumes:
+      - ./load_testing:/mnt/locust
+    command: -f /mnt/locust/locustfile.py --master
+    env_file:
+      - .env
+    depends_on:
+      - web
+
+  locust-worker:
+    image: locustio/locust
+    volumes:
+      - ./load_testing:/mnt/locust
+    command: -f /mnt/locust/locustfile.py --worker --master-host=locust-master
+    depends_on:
+      - locust-master
+    env_file:
+      - .env
+    deploy:
+      replicas: 4
+
 volumes:
   postgres_data:
   redis_data:
