@@ -33,11 +33,12 @@ class WebsiteSerializer(serializers.ModelSerializer):
 
     def validate_domain(self, value):
         """
-        Validate that the domain is unique for the organization
+        Ensure the domain is unique within the user's organization.
         """
-        # This validation will be handled in the view
+        organization = self.context['request'].user.organization
+        if Website.objects.filter(domain=value, organization=organization).exists():
+            raise serializers.ValidationError("This domain is already registered in your organization.")
         return value
-
 
 class UserSerializer(serializers.ModelSerializer):
     organization = serializers.PrimaryKeyRelatedField(read_only=True)

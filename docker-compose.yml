@@ -66,11 +66,11 @@ services:
   locust-master:
     image: locustio/locust
     ports:
-      - "8089:8089"  # Web UI
-      - "5557:5557"  # Worker connection
+      - "8089:8089"
+      - "5557:5557"
     volumes:
       - ./load_testing:/mnt/locust
-    command: -f /mnt/locust/locustfile.py --master
+    command: -f /mnt/locust/locustfile.py --master --autostart --autoquit 0
     env_file:
       - .env
     depends_on:

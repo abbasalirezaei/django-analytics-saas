@@ -60,6 +60,7 @@ class RegenerateAPIKeyView(APIView):
         organization = request.user.organization
         organization.api_key = None
         organization.save()
+        organization.refresh_from_db()
         return Response({
             'message': 'API key regenerated successfully',
             'new_api_key': organization.api_key
