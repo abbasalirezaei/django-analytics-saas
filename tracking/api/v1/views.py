@@ -12,6 +12,44 @@ from django.utils import timezone
 from django.db import transaction
 
 
+class SessionStartAPI(APIView):
+    """
+     Register a new user session when tracking begins.
+    """
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = SessionStartSerializer(data=request.data)
+        if serializer.is_valid():
+            domain = serializer.validated_data.pop('domain')
+
+            # Add client info if not provided
+            client_info = get_client_info(request)
+            if 'user_agent' not in serializer.validated_data:
+                serializer.validated_data['user_agent'] = client_info['user_agent']
+            if 'ip_address' not in serializer.validated_data:
+                serializer.validated_data['ip_address'] = client_info['ip_address']
+            if 'country' not in serializer.validated_data:
+                serializer.validated_data['country'] = client_info['country']
+
+            # Detect device type and browser
+            user_agent = serializer.validated_data.get('user_agent', '')
+            if 'device_type' not in serializer.validated_data:
+                serializer.validated_data['device_type'] = detect_device_type(
+                    user_agent)
+            if 'browser' not in serializer.validated_data:
+                serializer.validated_data['browser'] = detect_browser(
+                    user_agent)
+
+            session, result = TrackingService.start_session(
+                domain, serializer.validated_data)
+
+            if 'error' in result:
+                return Response(result, status=status.HTTP_400_BAD_REQUEST)
+            return Response(result, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class PageViewAPI(APIView):
     """
     Purpose: Track when a user views a specific page on a website.
@@ -54,7 +92,8 @@ class EventAPI(APIView):
         if serializer.is_valid():
             domain = serializer.validated_data.pop('domain')
             session_id = serializer.validated_data.pop('session_id')
-
+            serializer.validated_data.pop('user_agent', None)
+            serializer.validated_data.pop('ip_address', None)
             result = TrackingService.record_event(
                 domain, session_id, serializer.validated_data)
 
@@ -63,43 +102,6 @@ class EventAPI(APIView):
             return Response(result, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-class SessionStartAPI(APIView):
-    """
-     Register a new user session when tracking begins.
-    """
-    permission_classes = [AllowAny]
-
-    def post(self, request):
-        serializer = SessionStartSerializer(data=request.data)
-        if serializer.is_valid():
-            domain = serializer.validated_data.pop('domain')
-
-            # Add client info if not provided
-            client_info = get_client_info(request)
-            if 'user_agent' not in serializer.validated_data:
-                serializer.validated_data['user_agent'] = client_info['user_agent']
-            if 'ip_address' not in serializer.validated_data:
-                serializer.validated_data['ip_address'] = client_info['ip_address']
-            if 'country' not in serializer.validated_data:
-                serializer.validated_data['country'] = client_info['country']
-
-            # Detect device type and browser
-            user_agent = serializer.validated_data.get('user_agent', '')
-            if 'device_type' not in serializer.validated_data:
-                serializer.validated_data['device_type'] = detect_device_type(
-                    user_agent)
-            if 'browser' not in serializer.validated_data:
-                serializer.validated_data['browser'] = detect_browser(
-                    user_agent)
-
-            session, result = TrackingService.start_session(
-                domain, serializer.validated_data)
-
-            if 'error' in result:
-                return Response(result, status=status.HTTP_400_BAD_REQUEST)
-            return Response(result, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class SessionEndAPI(APIView):
