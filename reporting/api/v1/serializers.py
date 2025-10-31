@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from tracking.models import PageView, Event, Session, DailyWebsiteStats, PageStats
 
+from tracking.models import DailyWebsiteStats, Event, PageStats, PageView, Session
 
 class AnalyticsOverviewSerializer(serializers.Serializer):
     total_pageviews = serializers.IntegerField()
@@ -23,7 +23,14 @@ class TimeSeriesSerializer(serializers.Serializer):
 class PageStatsSerializer(serializers.ModelSerializer):
     class Meta:
         model = PageStats
-        fields = ['page_url', 'date', 'views', 'unique_visitors', 'avg_time_on_page', 'exit_rate']
+        fields = [
+            "page_url",
+            "date",
+            "views",
+            "unique_visitors",
+            "avg_time_on_page",
+            "exit_rate",
+        ]
 
 
 class TopPagesSerializer(serializers.Serializer):

@@ -1,4 +1,5 @@
 from django.utils.deprecation import MiddlewareMixin
+
 from .models import Organization
 
 
@@ -12,13 +13,13 @@ class OrganizationMiddleware(MiddlewareMixin):
         request.organization = None
 
         # If user is authenticated and has organization
-        if hasattr(request, 'user') and request.user.is_authenticated:
-            org = getattr(request.user, 'organization', None)
+        if hasattr(request, "user") and request.user.is_authenticated:
+            org = getattr(request.user, "organization", None)
             if org and org.is_active:
                 request.organization = org
 
         # If API key authentication was used
-        elif hasattr(request, 'auth') and isinstance(request.auth, Organization):
+        elif hasattr(request, "auth") and isinstance(request.auth, Organization):
             if request.auth.is_active:
                 request.organization = request.auth
 

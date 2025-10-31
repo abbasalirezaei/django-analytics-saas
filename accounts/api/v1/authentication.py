@@ -1,6 +1,8 @@
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
+
 from accounts.services.auth_services import validate_api_key
+
 
 class OrganizationAuthUser:
     def __init__(self, organization):
@@ -13,7 +15,8 @@ class OrganizationAuthUser:
     @property
     def is_authenticated(self):
         return True
-    
+
+
 class APIKeyAuthentication(BaseAuthentication):
     """
     Authenticate requests using API Key in headers.
@@ -36,13 +39,13 @@ class APIKeyAuthentication(BaseAuthentication):
 
     def get_api_key(self, request):
         # Check header first
-        api_key = request.headers.get('X-API-Key')
+        api_key = request.headers.get("X-API-Key")
 
         # Fallback to query parameter (for GET requests)
         if not api_key:
-            api_key = request.GET.get('api_key')
+            api_key = request.GET.get("api_key")
 
         return api_key
 
     def authenticate_header(self, request):
-        return 'APIKey'
+        return "APIKey"

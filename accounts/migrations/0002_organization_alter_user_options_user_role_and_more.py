@@ -5,42 +5,62 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('accounts', '0001_initial'),
+        ("accounts", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Organization',
+            name="Organization",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
-                ('api_key', models.CharField(blank=True, max_length=64, unique=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('is_active', models.BooleanField(default=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
+                ("api_key", models.CharField(blank=True, max_length=64, unique=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("is_active", models.BooleanField(default=True)),
             ],
             options={
-                'db_table': 'organizations',
+                "db_table": "organizations",
             },
         ),
         migrations.AlterModelOptions(
-            name='user',
+            name="user",
             options={},
         ),
         migrations.AddField(
-            model_name='user',
-            name='role',
-            field=models.CharField(choices=[('admin', 'Administrator'), ('user', 'User'), ('viewer', 'Viewer')], default='user', max_length=20),
+            model_name="user",
+            name="role",
+            field=models.CharField(
+                choices=[
+                    ("admin", "Administrator"),
+                    ("user", "User"),
+                    ("viewer", "Viewer"),
+                ],
+                default="user",
+                max_length=20,
+            ),
         ),
         migrations.AlterModelTable(
-            name='user',
-            table='users',
+            name="user",
+            table="users",
         ),
         migrations.AddField(
-            model_name='user',
-            name='organization',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, related_name='users', to='accounts.organization'),
+            model_name="user",
+            name="organization",
+            field=models.ForeignKey(
+                default=1,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="users",
+                to="accounts.organization",
+            ),
             preserve_default=False,
         ),
     ]

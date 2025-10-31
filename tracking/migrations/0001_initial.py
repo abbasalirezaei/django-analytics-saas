@@ -5,170 +5,305 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('accounts', '0002_organization_alter_user_options_user_role_and_more'),
+        ("accounts", "0002_organization_alter_user_options_user_role_and_more"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Website',
+            name="Website",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
-                ('domain', models.CharField(max_length=255, unique=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('is_active', models.BooleanField(default=True)),
-                ('organization', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='websites', to='accounts.organization')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
+                ("domain", models.CharField(max_length=255, unique=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("is_active", models.BooleanField(default=True)),
+                (
+                    "organization",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="websites",
+                        to="accounts.organization",
+                    ),
+                ),
             ],
             options={
-                'db_table': 'websites',
+                "db_table": "websites",
             },
         ),
         migrations.CreateModel(
-            name='Session',
+            name="Session",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('session_id', models.CharField(db_index=True, max_length=100)),
-                ('started_at', models.DateTimeField(auto_now_add=True)),
-                ('ended_at', models.DateTimeField(blank=True, null=True)),
-                ('user_agent', models.TextField(blank=True, null=True)),
-                ('ip_address', models.GenericIPAddressField(blank=True, null=True)),
-                ('country', models.CharField(blank=True, max_length=2, null=True)),
-                ('browser', models.CharField(blank=True, max_length=50, null=True)),
-                ('device_type', models.CharField(blank=True, choices=[('desktop', 'Desktop'), ('mobile', 'Mobile'), ('tablet', 'Tablet')], max_length=20, null=True)),
-                ('website', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='sessions', to='tracking.website')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("session_id", models.CharField(db_index=True, max_length=100)),
+                ("started_at", models.DateTimeField(auto_now_add=True)),
+                ("ended_at", models.DateTimeField(blank=True, null=True)),
+                ("user_agent", models.TextField(blank=True, null=True)),
+                ("ip_address", models.GenericIPAddressField(blank=True, null=True)),
+                ("country", models.CharField(blank=True, max_length=2, null=True)),
+                ("browser", models.CharField(blank=True, max_length=50, null=True)),
+                (
+                    "device_type",
+                    models.CharField(
+                        blank=True,
+                        choices=[
+                            ("desktop", "Desktop"),
+                            ("mobile", "Mobile"),
+                            ("tablet", "Tablet"),
+                        ],
+                        max_length=20,
+                        null=True,
+                    ),
+                ),
+                (
+                    "website",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="sessions",
+                        to="tracking.website",
+                    ),
+                ),
             ],
             options={
-                'db_table': 'sessions',
+                "db_table": "sessions",
             },
         ),
         migrations.CreateModel(
-            name='PageView',
+            name="PageView",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('page_url', models.TextField()),
-                ('page_title', models.CharField(blank=True, max_length=500, null=True)),
-                ('referrer', models.TextField(blank=True, null=True)),
-                ('timestamp', models.DateTimeField(auto_now_add=True)),
-                ('load_time', models.FloatField(blank=True, null=True)),
-                ('session', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='pageviews', to='tracking.session')),
-                ('website', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='pageviews', to='tracking.website')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("page_url", models.TextField()),
+                ("page_title", models.CharField(blank=True, max_length=500, null=True)),
+                ("referrer", models.TextField(blank=True, null=True)),
+                ("timestamp", models.DateTimeField(auto_now_add=True)),
+                ("load_time", models.FloatField(blank=True, null=True)),
+                (
+                    "session",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="pageviews",
+                        to="tracking.session",
+                    ),
+                ),
+                (
+                    "website",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="pageviews",
+                        to="tracking.website",
+                    ),
+                ),
             ],
             options={
-                'db_table': 'page_views',
-                'ordering': ['-timestamp'],
+                "db_table": "page_views",
+                "ordering": ["-timestamp"],
             },
         ),
         migrations.CreateModel(
-            name='PageStats',
+            name="PageStats",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('page_url', models.TextField()),
-                ('date', models.DateField(db_index=True)),
-                ('views', models.IntegerField(default=0)),
-                ('unique_visitors', models.IntegerField(default=0)),
-                ('avg_time_on_page', models.FloatField(default=0)),
-                ('exit_rate', models.FloatField(default=0)),
-                ('website', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='page_stats', to='tracking.website')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("page_url", models.TextField()),
+                ("date", models.DateField(db_index=True)),
+                ("views", models.IntegerField(default=0)),
+                ("unique_visitors", models.IntegerField(default=0)),
+                ("avg_time_on_page", models.FloatField(default=0)),
+                ("exit_rate", models.FloatField(default=0)),
+                (
+                    "website",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="page_stats",
+                        to="tracking.website",
+                    ),
+                ),
             ],
             options={
-                'db_table': 'page_stats',
+                "db_table": "page_stats",
             },
         ),
         migrations.CreateModel(
-            name='Event',
+            name="Event",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('event_name', models.CharField(db_index=True, max_length=100)),
-                ('event_data', models.JSONField(blank=True, null=True)),
-                ('page_url', models.TextField(blank=True, null=True)),
-                ('timestamp', models.DateTimeField(auto_now_add=True)),
-                ('session', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='events', to='tracking.session')),
-                ('website', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='events', to='tracking.website')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("event_name", models.CharField(db_index=True, max_length=100)),
+                ("event_data", models.JSONField(blank=True, null=True)),
+                ("page_url", models.TextField(blank=True, null=True)),
+                ("timestamp", models.DateTimeField(auto_now_add=True)),
+                (
+                    "session",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="events",
+                        to="tracking.session",
+                    ),
+                ),
+                (
+                    "website",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="events",
+                        to="tracking.website",
+                    ),
+                ),
             ],
             options={
-                'db_table': 'events',
-                'ordering': ['-timestamp'],
+                "db_table": "events",
+                "ordering": ["-timestamp"],
             },
         ),
         migrations.CreateModel(
-            name='DailyWebsiteStats',
+            name="DailyWebsiteStats",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('date', models.DateField(db_index=True)),
-                ('pageviews', models.IntegerField(default=0)),
-                ('unique_visitors', models.IntegerField(default=0)),
-                ('sessions', models.IntegerField(default=0)),
-                ('events', models.IntegerField(default=0)),
-                ('avg_session_duration', models.FloatField(default=0)),
-                ('bounce_rate', models.FloatField(default=0)),
-                ('website', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='daily_stats', to='tracking.website')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("date", models.DateField(db_index=True)),
+                ("pageviews", models.IntegerField(default=0)),
+                ("unique_visitors", models.IntegerField(default=0)),
+                ("sessions", models.IntegerField(default=0)),
+                ("events", models.IntegerField(default=0)),
+                ("avg_session_duration", models.FloatField(default=0)),
+                ("bounce_rate", models.FloatField(default=0)),
+                (
+                    "website",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="daily_stats",
+                        to="tracking.website",
+                    ),
+                ),
             ],
             options={
-                'db_table': 'daily_website_stats',
+                "db_table": "daily_website_stats",
             },
         ),
         migrations.AddIndex(
-            model_name='website',
-            index=models.Index(fields=['domain'], name='websites_domain_9fabc6_idx'),
+            model_name="website",
+            index=models.Index(fields=["domain"], name="websites_domain_9fabc6_idx"),
         ),
         migrations.AddIndex(
-            model_name='website',
-            index=models.Index(fields=['organization', 'created_at'], name='websites_organiz_4d913d_idx'),
+            model_name="website",
+            index=models.Index(
+                fields=["organization", "created_at"],
+                name="websites_organiz_4d913d_idx",
+            ),
         ),
         migrations.AddIndex(
-            model_name='session',
-            index=models.Index(fields=['session_id'], name='sessions_session_0947d2_idx'),
+            model_name="session",
+            index=models.Index(
+                fields=["session_id"], name="sessions_session_0947d2_idx"
+            ),
         ),
         migrations.AddIndex(
-            model_name='session',
-            index=models.Index(fields=['website', 'started_at'], name='sessions_website_351bb8_idx'),
+            model_name="session",
+            index=models.Index(
+                fields=["website", "started_at"], name="sessions_website_351bb8_idx"
+            ),
         ),
         migrations.AlterUniqueTogether(
-            name='session',
-            unique_together={('website', 'session_id')},
+            name="session",
+            unique_together={("website", "session_id")},
         ),
         migrations.AddIndex(
-            model_name='pageview',
-            index=models.Index(fields=['website', 'timestamp'], name='page_views_website_52f856_idx'),
+            model_name="pageview",
+            index=models.Index(
+                fields=["website", "timestamp"], name="page_views_website_52f856_idx"
+            ),
         ),
         migrations.AddIndex(
-            model_name='pageview',
-            index=models.Index(fields=['session'], name='page_views_session_108156_idx'),
+            model_name="pageview",
+            index=models.Index(
+                fields=["session"], name="page_views_session_108156_idx"
+            ),
         ),
         migrations.AddIndex(
-            model_name='pageview',
-            index=models.Index(fields=['timestamp'], name='page_views_timesta_ae239d_idx'),
+            model_name="pageview",
+            index=models.Index(
+                fields=["timestamp"], name="page_views_timesta_ae239d_idx"
+            ),
         ),
         migrations.AddIndex(
-            model_name='pagestats',
-            index=models.Index(fields=['website', 'date'], name='page_stats_website_d3e92c_idx'),
+            model_name="pagestats",
+            index=models.Index(
+                fields=["website", "date"], name="page_stats_website_d3e92c_idx"
+            ),
         ),
         migrations.AlterUniqueTogether(
-            name='pagestats',
-            unique_together={('website', 'page_url', 'date')},
+            name="pagestats",
+            unique_together={("website", "page_url", "date")},
         ),
         migrations.AddIndex(
-            model_name='event',
-            index=models.Index(fields=['website', 'event_name', 'timestamp'], name='events_website_403465_idx'),
+            model_name="event",
+            index=models.Index(
+                fields=["website", "event_name", "timestamp"],
+                name="events_website_403465_idx",
+            ),
         ),
         migrations.AddIndex(
-            model_name='event',
-            index=models.Index(fields=['session'], name='events_session_c8e03c_idx'),
+            model_name="event",
+            index=models.Index(fields=["session"], name="events_session_c8e03c_idx"),
         ),
         migrations.AddIndex(
-            model_name='event',
-            index=models.Index(fields=['timestamp'], name='events_timesta_ba2f67_idx'),
+            model_name="event",
+            index=models.Index(fields=["timestamp"], name="events_timesta_ba2f67_idx"),
         ),
         migrations.AddIndex(
-            model_name='dailywebsitestats',
-            index=models.Index(fields=['website', 'date'], name='daily_websi_website_3646f6_idx'),
+            model_name="dailywebsitestats",
+            index=models.Index(
+                fields=["website", "date"], name="daily_websi_website_3646f6_idx"
+            ),
         ),
         migrations.AlterUniqueTogether(
-            name='dailywebsitestats',
-            unique_together={('website', 'date')},
+            name="dailywebsitestats",
+            unique_together={("website", "date")},
         ),
     ]

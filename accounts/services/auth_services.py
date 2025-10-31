@@ -1,6 +1,8 @@
-from accounts.models import Organization
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.cache import cache
+from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
+
+from accounts.models import Organization
+
 
 def validate_api_key(api_key):
     """
@@ -18,7 +20,9 @@ def validate_api_key(api_key):
     try:
         organization = Organization.objects.get(api_key=api_key, is_active=True)
         # Cache the organization for future requests
-        cache.set(f"organization_{api_key}", organization, timeout=3600)  # Cache for 1 hour
+        cache.set(
+            f"organization_{api_key}", organization, timeout=3600
+        )  # Cache for 1 hour
         return organization
     except ObjectDoesNotExist:
         raise ValueError("Invalid or inactive API key")

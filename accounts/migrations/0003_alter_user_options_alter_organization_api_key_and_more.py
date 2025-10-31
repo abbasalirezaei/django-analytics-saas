@@ -5,37 +5,46 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('accounts', '0002_organization_alter_user_options_user_role_and_more'),
+        ("accounts", "0002_organization_alter_user_options_user_role_and_more"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='user',
-            options={'verbose_name': 'user', 'verbose_name_plural': 'users'},
+            name="user",
+            options={"verbose_name": "user", "verbose_name_plural": "users"},
         ),
         migrations.AlterField(
-            model_name='organization',
-            name='api_key',
+            model_name="organization",
+            name="api_key",
             field=models.CharField(blank=True, max_length=32, null=True, unique=True),
         ),
         migrations.AlterField(
-            model_name='user',
-            name='organization',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='users', to='accounts.organization'),
+            model_name="user",
+            name="organization",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="users",
+                to="accounts.organization",
+            ),
         ),
         migrations.AlterField(
-            model_name='user',
-            name='role',
-            field=models.CharField(choices=[('admin', 'Admin'), ('user', 'User')], default='user', max_length=50),
+            model_name="user",
+            name="role",
+            field=models.CharField(
+                choices=[("admin", "Admin"), ("user", "User")],
+                default="user",
+                max_length=50,
+            ),
         ),
         migrations.AlterModelTable(
-            name='organization',
+            name="organization",
             table=None,
         ),
         migrations.AlterModelTable(
-            name='user',
+            name="user",
             table=None,
         ),
     ]

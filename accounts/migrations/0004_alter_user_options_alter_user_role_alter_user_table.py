@@ -4,23 +4,30 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('accounts', '0003_alter_user_options_alter_organization_api_key_and_more'),
+        ("accounts", "0003_alter_user_options_alter_organization_api_key_and_more"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='user',
+            name="user",
             options={},
         ),
         migrations.AlterField(
-            model_name='user',
-            name='role',
-            field=models.CharField(choices=[('admin', 'Administrator'), ('user', 'User'), ('viewer', 'Viewer')], default='user', max_length=20),
+            model_name="user",
+            name="role",
+            field=models.CharField(
+                choices=[
+                    ("admin", "Administrator"),
+                    ("user", "User"),
+                    ("viewer", "Viewer"),
+                ],
+                default="user",
+                max_length=20,
+            ),
         ),
         migrations.AlterModelTable(
-            name='user',
-            table='users',
+            name="user",
+            table="users",
         ),
     ]

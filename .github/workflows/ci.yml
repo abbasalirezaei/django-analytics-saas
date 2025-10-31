@@ -1,0 +1,71 @@
+name: Django CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: analytics
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd="pg_isready"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+      redis:
+        image: redis:7
+        ports: ['6379:6379']
+
+    env:
+      DEBUG: True
+      SECRET_KEY: test-secret
+      DB_NAME: analytics
+      DB_USER: postgres
+      DB_PASSWORD: password
+      DB_HOST: localhost
+      DB_PORT: 5432
+      REDIS_URL: redis://localhost:6379/0
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install -r requirements-dev.txt
+
+    - name: Run migrations
+      run: python manage.py migrate
+
+    - name: Run linting checks
+      run: |
+        flake8 .
+        black --check .
+        isort --check-only .
+
+    - name: Run tests with coverage
+      run: pytest --cov=. --cov-report=term-missing
+
+    - name: Run Celery worker (smoke test)
+      run: |
+        celery -A analytics_core worker --loglevel=INFO --detach
+        sleep 5
+        ps aux | grep 'celery worker'

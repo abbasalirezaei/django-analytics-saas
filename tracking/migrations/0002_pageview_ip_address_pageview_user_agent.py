@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tracking', '0001_initial'),
+        ("tracking", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='pageview',
-            name='ip_address',
+            model_name="pageview",
+            name="ip_address",
             field=models.GenericIPAddressField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='pageview',
-            name='user_agent',
+            model_name="pageview",
+            name="user_agent",
             field=models.TextField(blank=True, null=True),
         ),
     ]
