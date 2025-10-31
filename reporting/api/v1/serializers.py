@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from tracking.models import DailyWebsiteStats, Event, PageStats, PageView, Session
 
+
 class AnalyticsOverviewSerializer(serializers.Serializer):
     total_pageviews = serializers.IntegerField()
     total_visitors = serializers.IntegerField()
