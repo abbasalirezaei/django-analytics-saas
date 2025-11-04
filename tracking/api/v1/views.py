@@ -16,7 +16,7 @@ from .serializers import (
 
 class SessionStartAPI(APIView):
     """
-    Register a new user session when tracking begins.
+    Register a new user session when tracking begins
     """
 
     permission_classes = [AllowAny]
@@ -26,7 +26,7 @@ class SessionStartAPI(APIView):
         if serializer.is_valid():
             domain = serializer.validated_data.pop("domain")
 
-            # Add client info if not provided
+            # Add client info(user_agent, ip_address, country) if not provided
             client_info = get_client_info(request)
             if "user_agent" not in serializer.validated_data:
                 serializer.validated_data["user_agent"] = client_info["user_agent"]
@@ -42,7 +42,8 @@ class SessionStartAPI(APIView):
                     user_agent
                 )
             if "browser" not in serializer.validated_data:
-                serializer.validated_data["browser"] = detect_browser(user_agent)
+                serializer.validated_data["browser"] = detect_browser(
+                    user_agent)
 
             session, result = TrackingService.start_session(
                 domain, serializer.validated_data
@@ -50,7 +51,8 @@ class SessionStartAPI(APIView):
 
             if "error" in result:
                 return Response(result, status=status.HTTP_400_BAD_REQUEST)
-            return Response(result, status=status.HTTP_201_CREATED)
+            return Response(
+                result, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -129,7 +131,8 @@ class BatchTrackingAPI(APIView):
 
     @transaction.atomic
     def post(self, request):
-        data = request.data if isinstance(request.data, list) else [request.data]
+        data = request.data if isinstance(
+            request.data, list) else [request.data]
 
         # Add client info to all items
         client_info = get_client_info(request)

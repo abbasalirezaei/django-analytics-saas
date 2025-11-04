@@ -45,7 +45,7 @@ class EventSerializer(serializers.ModelSerializer):
 
 
 class SessionStartSerializer(serializers.ModelSerializer):
-    domain = serializers.CharField(write_only=True)
+    domain = serializers.CharField(write_only=True, required=True)
 
     class Meta:
         model = Session
@@ -59,6 +59,11 @@ class SessionStartSerializer(serializers.ModelSerializer):
             "device_type",
         ]
         read_only_fields = ["website"]
+    def validate_domain(self, value):
+        if not Website.objects.filter(domain=value, is_active=True).exists():
+            raise serializers.ValidationError("Website with this domain does not exist or is inactive.")
+        return value
+
 
 
 class SessionEndSerializer(serializers.Serializer):

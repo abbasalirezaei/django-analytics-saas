@@ -68,9 +68,14 @@ class TrackingService:
             session = Session.objects.create(
                 website=website, **data, started_at=timezone.now()
             )
-            return session, {"status": "ok", "session_id": session.session_id}
+            return session, {
+                "status": "ok",
+                "session_id": session.session_id,
+                "started_at": session.started_at,
+                "device_type": session.device_type
+            }
         except Website.DoesNotExist:
-            return None, {"error": "Website not found"}
+            return None, {"error": f"Website with this domain {domain} not found"}
         except Exception as e:
             return None, {"error": str(e)}
 
@@ -81,7 +86,8 @@ class TrackingService:
         """
         try:
             website = Website.objects.get(domain=domain, is_active=True)
-            session = Session.objects.get(website=website, session_id=session_id)
+            session = Session.objects.get(
+                website=website, session_id=session_id)
             session.ended_at = timezone.now()
             session.save()
             return {"status": "ok"}
@@ -110,9 +116,11 @@ class TrackingService:
                             domain, session_id, item
                         )
                     elif event_type == "event":
-                        result = TrackingService.record_event(domain, session_id, item)
+                        result = TrackingService.record_event(
+                            domain, session_id, item)
                     else:
-                        errors.append({"error": "Invalid event type", "item": item})
+                        errors.append(
+                            {"error": "Invalid event type", "item": item})
                         continue
 
                     if "error" in result:
