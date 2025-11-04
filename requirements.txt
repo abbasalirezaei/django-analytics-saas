@@ -24,6 +24,3 @@ flake8
 black
 isort
 pre-commit
-# Security tools (optional)
-bandit
-safety
