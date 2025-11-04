@@ -12,6 +12,7 @@ from rest_framework.test import APIClient
 test serviece
 """
 
+
 @pytest.mark.django_db
 def test_start_session_service_success():
     website = WebsiteFactory()
@@ -31,9 +32,12 @@ def test_start_session_service_success():
     assert result["status"] == "ok"
     assert Session.objects.filter(session_id="abc123").exists()
 
+
 """
 test serializer with valid and invalid data
 """
+
+
 @pytest.mark.django_db
 def test_start_session_serializer_valid():
     website = WebsiteFactory()
@@ -75,17 +79,17 @@ def test_start_session_serializer_invalid():
 """
 test the view with valid and invalid data
 """
+
+
 @pytest.mark.django_db
 def test_start_session_success():
-    client = APIClient()
-    website = WebsiteFactory()
-    domain = website.domain
-    url = reverse("tracking:api-v1:session-start")
-    
     data = SessionFactory.build()
+    website = WebsiteFactory()
 
+    client = APIClient()
+    url = reverse("tracking:api-v1:session-start")
     payload = {
-        "domain": domain,
+        "domain": website.domain,
         "session_id": data.session_id,
         "user_agent": data.user_agent,
         "ip_address": data.ip_address,
@@ -97,4 +101,36 @@ def test_start_session_success():
     response = client.post(url, data=payload, format="json")
     assert response.status_code == 201
     assert response.data["status"] == "ok"
+
+
+@pytest.mark.django_db
+def test_start_session_fail():
+    website = WebsiteFactory()
+    url = reverse("tracking:api-v1:session-start")
+    payload = {
+        "domain": website.domain,
+    }
+    client = APIClient()
+    response = client.post(url, data=payload, format="json")
+    assert response.status_code == 400
+    assert "session_id" in response.data
+
+
+@pytest.mark.django_db
+def test_start_session_dublicate_session_id():
+    website = WebsiteFactory()
+    SessionFactory(website=website, session_id="abc12")
+    data = SessionFactory.build()
+    payload = {
+        "session_id": "abc12",  # dublicate
+        "user_agent": data.user_agent,
+        "ip_address": data.ip_address,
+        "country": data.country,
+        "browser": data.browser,
+        "device_type": data.device_type,
+    }
+    session, result = TrackingService.start_session(website.domain, payload)
+
+    assert session is None
+    assert "error" in result
 
