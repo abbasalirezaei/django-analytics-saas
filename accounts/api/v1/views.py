@@ -62,7 +62,7 @@ class OrganizationProfileView(generics.RetrieveAPIView):
 
     def get_object(self):
         return Organization.objects.prefetch_related(
-            Prefetch("users", queryset=User.objects.only("id", "username"))
+            Prefetch("users", queryset=User.objects.only("id", "username"))[:50]
         ).get(id=self.request.user.organization.id)
 
 

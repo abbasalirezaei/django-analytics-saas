@@ -97,12 +97,12 @@ class TrackingUser(BaseUser):
             websites = response.json()
             if isinstance(websites, list) and len(websites) > 0:
                 self.current_domain = websites[0].get("domain")
-                print(f"✅ TrackingUser using existing website: {self.current_domain}")
+                print(f"TrackingUser using existing website: {self.current_domain}")
             else:
                 print(" No websites found, creating new one...")
                 self.current_domain = self.create_website()
         else:
-            print(f"❌ Failed to get websites: {response.status_code}")
+            print(f"Failed to get websites: {response.status_code}")
             self.current_domain = self.create_website()
 
     def create_website(self):
@@ -114,10 +114,10 @@ class TrackingUser(BaseUser):
             headers=self.headers,
         )
         if response.status_code == 201:
-            print(f"✅ Created new website: {domain}")
+            print(f"Created new website: {domain}")
             return domain
         else:
-            print(f"❌ Failed to create website: {response.status_code}")
+            print(f"Failed to create website: {response.status_code}")
             # Fallback to a default domain if creation fails
             return f"fallback-{random.randint(1000, 9999)}.com"
 
@@ -341,10 +341,10 @@ class TrackingUser(BaseUser):
 
         if response.status_code == 201:
             self.active_sessions.append(session_data["session_id"])
-            print(f"✅ Started session: {session_data['session_id']}")
+            print(f"Started session: {session_data['session_id']}")
             return session_data["session_id"]
         else:
-            print(f"❌ Failed to start session: {response.status_code}")
+            print(f"Failed to start session: {response.status_code}")
         return None
 
     @task(6)  # Most frequent - pageviews happen a lot
@@ -368,29 +368,29 @@ class TrackingUser(BaseUser):
         )
 
         if response.status_code == 201:
-            print(f"✅ Tracked pageview for session: {session_id}")
+            print(f"Tracked pageview for session: {session_id}")
         else:
-            print(f"❌ Failed to track pageview: {response.status_code}")
+            print(f"Failed to track pageview: {response.status_code}")
 
     @task(5)
     def track_event(self):
         """Track an event - /api/tracking/v1/event/"""
         if not self.current_domain:
-            print("❌ No domain available for event tracking")
+            print("No domain available for event tracking")
             return
 
         # Use existing session or create new one
         if not self.active_sessions:
             session_id = self.start_session()
             if not session_id:
-                print("❌ Failed to create session for event tracking")
+                print("Failed to create session for event tracking")
                 return
         else:
             session_id = random.choice(self.active_sessions)
 
         event_data = self.generate_event_data(session_id)
 
-        print(f"📤 Sending event: {event_data['event_name']} for session {session_id}")
+        print(f"Sending event: {event_data['event_name']} for session {session_id}")
 
         try:
             response = self.client.post(
@@ -398,16 +398,16 @@ class TrackingUser(BaseUser):
             )
 
             if response.status_code == 201:
-                print(f"✅ Successfully tracked event '{event_data['event_name']}'")
+                print(f"Successfully tracked event '{event_data['event_name']}'")
             else:
                 print(
-                    f"❌ Event tracking failed: {response.status_code} - {response.text}"
+                    f"Event tracking failed: {response.status_code} - {response.text}"
                 )
                 # Print the exact data that was sent for debugging
-                print(f"🔍 Data sent: {event_data}")
+                print(f"Data sent: {event_data}")
 
         except Exception as e:
-            print(f"🚨 Exception during event tracking: {e}")
+            print(f"Exception during event tracking: {e}")
 
     @task(2)
     def end_session(self):
@@ -424,9 +424,9 @@ class TrackingUser(BaseUser):
 
         if response.status_code == 200:
             self.active_sessions.remove(session_id)
-            print(f"✅ Ended session: {session_id}")
+            print(f"Ended session: {session_id}")
         else:
-            print(f"❌ Failed to end session: {response.status_code}")
+            print(f"Failed to end session: {response.status_code}")
 
     @task(1)  # Less frequent - batch operations
     def batch_tracking(self):
@@ -444,9 +444,9 @@ class TrackingUser(BaseUser):
             # Add the session from batch to active sessions
             session_id = batch_data["session_start"]["session_id"]
             self.active_sessions.append(session_id)
-            print(f"✅ Sent batch tracking data with session: {session_id}")
+            print(f"Sent batch tracking data with session: {session_id}")
         else:
-            print(f"❌ Failed to send batch data: {response.status_code}")
+            print(f"Failed to send batch data: {response.status_code}")
 
 
 class AnalyticsUser(BaseUser):
@@ -466,7 +466,7 @@ class AnalyticsUser(BaseUser):
             # FIX: Check if websites is a list and not empty
             if isinstance(websites, list) and len(websites) > 0:
                 website_id = websites[0].get("id")
-                print(f"✅ AnalyticsUser using existing website ID: {website_id}")
+                print(f"AnalyticsUser using existing website ID: {website_id}")
                 return website_id
             else:
                 print(" No websites found for analytics, creating new one...")
@@ -480,10 +480,10 @@ class AnalyticsUser(BaseUser):
         )
         if response.status_code == 201:
             website_id = response.json().get("id")
-            print(f"✅ Created new website for analytics: {website_id}")
+            print(f"Created new website for analytics: {website_id}")
             return website_id
         else:
-            print(f"❌ Failed to create website for analytics: {response.status_code}")
+            print(f"Failed to create website for analytics: {response.status_code}")
             return None
 
     @task(4)
